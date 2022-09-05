@@ -5,6 +5,13 @@ const app = express();
 const mongoose = require("mongoose");
 const customers = require("./routes/customers");
 const registerUser = require("./routes/registerUser");
+const auth = require("./routes/auth");
+
+if (!process.env.JWT_TOKEN) {
+  console.log(process.env.JWT_TOKEN);
+  console.log("FATAL ERROR");
+  process.exit(1);
+}
 
 // *Custom Middlewares
 app.use(express.json());
@@ -25,3 +32,6 @@ app.use("/api/customers", customers);
 
 // * User Registration
 app.use("/api/register", registerUser);
+
+// * Authenticate User
+app.use("/api/auth", auth);

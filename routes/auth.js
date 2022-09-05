@@ -9,13 +9,18 @@ router.post("/", async (req, res) => {
   const result = await new registerUser(
     _.pick(req.body, ["name", "email", "password"])
   );
-  const salt = await bcrypt.genSalt(10);
-  result.password = await bcrypt.hash(result.password, salt);
-  await result.save();
-  const token = result.generateAuthToken();
-  res
-    .header("x-auth-token", token)
-    .send(_.pick(result, ["_id", "name", "password"]));
+
+  const hashed = await registerUser
+    .find({ email: "awais.2120@gmail.com" })
+    .select("password");
+  console.log(hashed[0].password);
+  const valid = await bcrypt.compare(req.body.password, hashed[0].password);
+  if (!valid) {
+    res.status(404).send("Invalid email or Password");
+  } else {
+    const token = result.generateAuthToken();
+    res.send(token);
+  }
 });
 
 module.exports = router;
